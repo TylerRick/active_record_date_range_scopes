@@ -7,7 +7,7 @@ RSpec.describe ActiveRecord::DateRangeScopes do
     let!(:author1) { Author.create!(name: 'author1') }
     let!(:author2) { Author.create!(name: 'author2') }
 
-    let!(:book_2000)   { Book.create!(created_at: '2000-01-01', author: author1) }
+    let!(:book_2000)   { Book.create!(created_at: '2000-01-01'.to_time.in_time_zone, author: author1) }
     let!(:book_3y_ago) { Book.create!(created_at: 3.years.ago + 1, author: author1) }
     let!(:book_1w_ago) { Book.create!(created_at: 1.week.ago  + 1, author: author2) }
 
@@ -17,6 +17,11 @@ RSpec.describe ActiveRecord::DateRangeScopes do
         match_array(Book.created_between(3.years.ago, 1.year.ago))
       expect(Book.created_after(1.week.ago)).to match_array([book_1w_ago])
       expect(Book.created_before(1.day.ago)).to match_array([book_2000, book_3y_ago, book_1w_ago])
+      expect(Book.created_before(book_2000.created_at)).to match_array([book_2000])
+
+      expect(Book.created_on(1.week.ago)).to match_array([book_1w_ago])
+      expect(Book.created_on(1.week.ago.to_date)).to match_array([book_1w_ago])
+      expect(Book.created_on('2000-01-01'.to_date)    ).to match_array([book_2000])
     end
 
     it do

@@ -76,6 +76,13 @@ module DateRangeScopes
           arel_attr.().lteq( time_or_end_of_day(date_or_time) )
         )
       }
+
+      scope :"#{name}_on", ->(date_or_time) {
+        public_send(:"#{name}_between",
+          date_or_time.in_time_zone.beginning_of_day,
+          date_or_time.in_time_zone.end_of_day
+        )
+      }
     end
 
     def time_or_end_of_day(date_or_time)
