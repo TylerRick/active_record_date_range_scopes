@@ -68,7 +68,7 @@ module DateRangeScopes
           arel_attr.().gteq( time_or_beginning_of_day(date_or_time) )
         )
       }
-      scope :"#{name}_before",  ->(date_or_time) {
+      scope :"#{name}_before", ->(date_or_time) {
         next unless date_or_time
 
         instance_eval(&relation).
@@ -144,7 +144,7 @@ module DateRangeScopes
           target_model.public_send(:"#{name_on_target}_after", date_or_time)
         )
       })
-      scope(:"#{local_name}_before",  ->(date_or_time) {
+      scope(:"#{local_name}_before", ->(date_or_time) {
         next unless date_or_time
 
         instance_eval(&relation).

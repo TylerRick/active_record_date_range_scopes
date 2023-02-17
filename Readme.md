@@ -69,7 +69,12 @@ class Author < ActiveRecord::Base
     )
   }
   scope :with_any_books_created_before, ->(date_or_time) {
-    …
+    next unless date_or_time
+
+    joins(:books).
+    where(
+      Book.arel_table[:created_at].lteq( time_or_end_of_day(date_or_time) )
+    )
   }
 end
 ```
