@@ -1,7 +1,7 @@
 module ActiveRecord
   module DateRangeScopes
     def self.version
-      "0.1.2"
+      "1.0.0"
     end
   end
 end
