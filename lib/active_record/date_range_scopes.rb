@@ -57,8 +57,18 @@ module DateRangeScopes
       relation = relation.to_proc
 
       scope :"#{name}_between", ->(after, before) {
-        public_send(:"#{name}_after", after).
-        public_send(:"#{name}_before", before)
+        next unless after || before
+
+        if ! after
+          public_send(:"#{name}_before", before)
+        elsif ! before
+          public_send(:"#{name}_after", after)
+        else
+          instance_eval(&relation).
+          where(
+            arel_attr.().between( time_or_beginning_of_day(after) .. time_or_end_of_day(before) )
+          )
+        end
       }
       scope :"#{name}_after",   ->(date_or_time) {
         next unless date_or_time
@@ -140,8 +150,18 @@ module DateRangeScopes
       name_on_target = scope || local_name.to_s.sub(/^#{target_model.model_name.plural}_/, '')
 
       scope(:"#{local_name}_between", ->(after, before) {
-        public_send(:"#{local_name}_after", after).
-        public_send(:"#{local_name}_before", before)
+        next unless after || before
+
+        if ! after
+          public_send(:"#{local_name}_before", before)
+        elsif ! before
+          public_send(:"#{local_name}_after", after)
+        else
+          instance_eval(&relation).
+          merge(
+            target_model.public_send(:"#{name_on_target}_between", after, before)
+          )
+        end
       })
       scope(:"#{local_name}_after",   ->(date_or_time) {
         next unless date_or_time
